@@ -3,13 +3,13 @@ package cmd
 import (
 	"fmt"
 	"os"
-	
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
 	"github.com/go-clog/clog"
 	"github.com/urfave/cli"
-	
+
 	"github.com/rodkranz/monitor/pkg/message"
 	"github.com/rodkranz/monitor/pkg/setting"
 )
@@ -32,11 +32,11 @@ func sqsSetting(c *cli.Context) error {
 	if c.String("queue_url") == "" {
 		return fmt.Errorf("parameter %s is missing", "queue_url")
 	}
-	
+
 	setting.SQS.QueueURL = c.String("queue_url")
 	setting.SQS.NumMessages = c.Int64("max_message")
 	setting.SQS.WaitTime = c.Int64("wait_time")
-	
+
 	return nil
 }
 
@@ -44,7 +44,7 @@ func runSQS(_ *cli.Context) error {
 	awsSession := sqs.New(session.Must(session.NewSession()))
 	msg := make(chan *message.Message)
 	out := make(chan error)
-	
+
 	go func() {
 		for {
 			err := receiveMessage(awsSession, msg)
@@ -54,7 +54,7 @@ func runSQS(_ *cli.Context) error {
 		}
 		close(msg)
 	}()
-	
+
 	return readMessage(msg, out)
 }
 
@@ -67,15 +67,15 @@ func receiveMessage(s *sqs.SQS, msg chan *message.Message) error {
 			"All",
 		}),
 	})
-	
+
 	if err != nil {
 		return err
 	}
-	
+
 	for _, m := range result.Messages {
 		msg <- message.NewMessage(m)
 	}
-	
+
 	return nil
 }
 
@@ -86,7 +86,7 @@ func readMessage(msg chan *message.Message, out chan error) (err error) {
 			return err
 		case m := <-msg:
 			clog.Info("[messageID:%s][topic:%s]", *m.MessageId, m.Topic())
-			
+
 			err := setting.WLog(m)
 			if err != nil {
 				return err

@@ -9,7 +9,7 @@ import (
 	"github.com/go-clog/clog"
 	"github.com/go-xorm/core"
 	"github.com/go-xorm/xorm"
-	
+
 	// Import SQLLite3
 	_ "github.com/mattn/go-sqlite3"
 
@@ -87,7 +87,7 @@ type msg struct {
 	MessageID string `xorm:"VARCHAR(255)"`
 	Topic     string `xorm:"VARCHAR(255)"`
 	Body      string `xorm:"Text"`
-	
+
 	Created     time.Time `xorm:"-"`
 	CreatedUnix int64
 }
