@@ -1,0 +1,63 @@
+{
+  "data": {
+    "advert":{
+      "id": "rodlps01",
+      "title" : "this is a big title xpto",
+      "description" : "This is description and now it has more than 20 chars. At least this is what the validation message seems to be saying.",
+      "version": 1,
+      "category_code": "urn:category:johnkings",
+      "advertiser_type": "private",
+      "contact": {
+        "name": "daniel3",
+        "phones": ["790123123", "790123546"],
+        "logo": "https://www.w3schools.com/css/paris.jpg"
+      },
+      "price": {
+        "negotiable": false,
+        "value": 123.123,
+        "currency": "",
+        "trade": false,
+        "with_tax": false
+      },
+      "location": {
+        "lat": 53.9045,
+        "lon": 27.5615,
+        "name": "Minsk"
+      },
+      "images": [
+        {
+          "url": "https://www.w3schools.com/css/paris.jpg"
+        },
+        {
+          "url": "https://www.w3schools.com/css/paris.jpg"
+        }
+      ],
+      "attributes": {
+        "scalar": [
+          {
+            "code": "urn:attribute:size",
+            "value": "large"
+          },
+          {
+            "code": "urn:attribute:price",
+            "value": "2017"
+          }
+        ]
+      }
+    },
+    "destination": {
+      "origin": {
+        "urn": "urn:partner:stockarsar"
+      },
+      "publisher": {
+        "urn": "urn:auth:user:55fd942c-c08f-11e7-964a-02dc7eed2bdc"
+      },
+      "target": {
+        "urn": "urn:partner:olxbydev"
+      }
+    },
+    "status": {
+      "code": "TO_POST"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# Log
+export DISABLE_LOG="false"
+export LOG_DRIVER="sql" # options are files, sql
+# Example:
+#    LOG_PARAM="$(pwd)/log"
+#    LOG_PARAM="$(pwd)/log/monitor.db"
+export LOG_PARAM="$(pwd)/log/monitor.db"
+
+# SQS environment
+export QUEUE_URL=https://sqs.eu-west-500.amazonaws.com/XXXXXXXXXXXX/queue-name
+
+# SNS environment
+export INSTANCE=arn:aws:sns:eu-west-500
+export ID=XXXXXXXXXXXX
+export TOPIC=topic-name-example
+
+# AWS credentials
+export AWS_ACCESS_KEY_ID=XXXXXXXXXXXXXXXXXXXX
+export AWS_SECRET_ACCESS_KEY=xXXXxXXXXXxXXXXXxxXxxXxxxxXxxXXXxXXxxXxx
+export AWS_REGION=eu-west-500
+
+go run main.go $@
