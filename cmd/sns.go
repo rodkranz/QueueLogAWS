@@ -1,24 +1,25 @@
 package cmd
 
 import (
-	"os"
 	"io/ioutil"
-	
-	"github.com/urfave/cli"
-	"github.com/go-clog/clog"
+	"os"
+
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sns"
-	"github.com/aws/aws-sdk-go/aws"
-	
+	"github.com/go-clog/clog"
+	"github.com/urfave/cli"
+
 	"github.com/rodkranz/monitor/pkg/setting"
 	"github.com/rodkranz/monitor/pkg/tool"
 )
 
+// SNS is variable to export command to send message in AWS SNS
 var SNS = cli.Command{
 	Name:        "sns",
 	Description: "Send message to SNS",
 	Usage:       "Send message to queue",
-	Before:      SNSSetting,
+	Before:      snsSetting,
 	Action:      runSNS,
 	Flags: []cli.Flag{
 		cli.StringFlag{Name: "instance", Usage: "Address of instance", Value: os.Getenv("INSTANCE")},
@@ -31,19 +32,19 @@ var SNS = cli.Command{
 
 var body []byte
 
-func SNSSetting(c *cli.Context) (err error) {
+func snsSetting(c *cli.Context) (err error) {
 	if c.String("instance") == "" || c.String("id") == "" || c.String("topic") == "" {
-		return MissingParameters{"instance"}
+		return ErrMissingParameters{"instance"}
 	}
-	
+
 	setting.SNS.Instance = c.String("instance")
 	setting.SNS.ID = c.String("id")
 	setting.SNS.Topic = c.String("topic")
-	
+
 	if c.IsSet("data") {
 		body = []byte(c.String("data"))
 	}
-	
+
 	if c.IsSet("file") {
 		f, err := os.Open(c.String("file"))
 		if err != nil {
@@ -54,11 +55,11 @@ func SNSSetting(c *cli.Context) (err error) {
 			return err
 		}
 	}
-	
+
 	if len(body) == 0 {
-		return BodyEmpty{}
+		return ErrBodyEmpty{}
 	}
-	
+
 	return nil
 }
 
@@ -68,14 +69,14 @@ func runSNS(_ *cli.Context) error {
 		Message:  aws.String(string(body)),
 		TopicArn: aws.String(setting.GetQueue()),
 	}
-	
+
 	clog.Info("Topic: [%s]", setting.GetQueue())
 	clog.Info(" Body: [%s]", tool.MD5(body))
-	
+
 	_, err := sns.New(awsSession).Publish(snsMessage)
 	if err != nil {
 		clog.Error(0, err.Error())
 	}
-	
+
 	return err
 }
