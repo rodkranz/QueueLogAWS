@@ -4,23 +4,23 @@ import (
 	"fmt"
 	"os"
 	
-	"github.com/urfave/cli"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/go-clog/clog"
+	"github.com/urfave/cli"
 	
-	"github.com/rodkranz/monitor/pkg/setting"
 	"github.com/rodkranz/monitor/pkg/message"
-	_ "github.com/rodkranz/monitor/pkg/historic"
+	"github.com/rodkranz/monitor/pkg/setting"
 )
 
+// SQS is variable to export command to listen message in AWS SQS
 var SQS = cli.Command{
 	Name:        "sqs",
 	Description: "Listen SQS queue",
 	Usage:       "Listen messages from queue",
 	Action:      runSQS,
-	Before:      SQSSetting,
+	Before:      sqsSetting,
 	Flags: []cli.Flag{
 		cli.StringFlag{Name: "queue_url", Usage: "", Value: os.Getenv("QUEUE_URL")},
 		cli.IntFlag{Name: "max_message", Usage: "", Value: 10},
@@ -28,12 +28,12 @@ var SQS = cli.Command{
 	},
 }
 
-func SQSSetting(c *cli.Context) error {
+func sqsSetting(c *cli.Context) error {
 	if c.String("queue_url") == "" {
 		return fmt.Errorf("parameter %s is missing", "queue_url")
 	}
 	
-	setting.SQS.QueueUrl = c.String("queue_url")
+	setting.SQS.QueueURL = c.String("queue_url")
 	setting.SQS.NumMessages = c.Int64("max_message")
 	setting.SQS.WaitTime = c.Int64("wait_time")
 	
@@ -60,7 +60,7 @@ func runSQS(_ *cli.Context) error {
 
 func receiveMessage(s *sqs.SQS, msg chan *message.Message) error {
 	result, err := s.ReceiveMessage(&sqs.ReceiveMessageInput{
-		QueueUrl:            aws.String(setting.SQS.QueueUrl),
+		QueueUrl:            aws.String(setting.SQS.QueueURL),
 		MaxNumberOfMessages: aws.Int64(setting.SQS.NumMessages),
 		WaitTimeSeconds:     aws.Int64(setting.SQS.WaitTime),
 		MessageAttributeNames: aws.StringSlice([]string{

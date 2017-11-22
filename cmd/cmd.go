@@ -4,16 +4,20 @@ import (
 	"fmt"
 )
 
-type MissingParameters struct {
+// ErrMissingParameters this is error the parameter is missing
+type ErrMissingParameters struct {
 	Param string
 }
 
-func (mp MissingParameters) Error() string {
+// Error return the message error
+func (mp ErrMissingParameters) Error() string {
 	return fmt.Sprintf("parameter %s is missing", mp.Param)
 }
 
-type BodyEmpty struct{}
+// ErrBodyEmpty return message that body cannot be empty
+type ErrBodyEmpty struct{}
 
-func (be BodyEmpty) Error() string {
+// Error return the message error
+func (be ErrBodyEmpty) Error() string {
 	return fmt.Sprintf("body cannot be empty")
 }
